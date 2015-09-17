@@ -17,13 +17,16 @@
                 "qubit.c",
                 "hefty1.c",
                 "shavite3.c",
-                "cryptonight.c",
                 "x13.c",
-                "boolberry.cc",
                 "nist5.c",
                 "sha1.c",
                 "x15.c",
+                "whirlpoolx.c",
+                "Lyra2RE.c",
+                "zr5.c",
                 "fresh.c",
+                "Lyra2.c",
+                "Sponge.c",
                 "sha3/sph_hefty1.c",
                 "sha3/sph_fugue.c",
                 "sha3/aes_helper.c",
@@ -53,6 +56,7 @@
             ],
             "include_dirs": [
                 "crypto",
+                "sha3",
             ],
             "cflags_cc": [
                 "-std=c++0x"
