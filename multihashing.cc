@@ -17,15 +17,18 @@ extern "C" {
     #include "qubit.h"
     #include "hefty1.h"
     #include "shavite3.h"
-    #include "cryptonight.h"
+    //#include "cryptonight.h"
     #include "x13.h"
     #include "nist5.h"
     #include "sha1.h",
     #include "x15.h"
-	#include "fresh.h"
+    #include "whirlpoolx.h"
+    #include "fresh.h"
+    #include "Lyra2RE.h"
+    #include "zr5.h"
 }
 
-#include "boolberry.h"
+//#include "boolberry.h"
 
 using namespace node;
 using namespace v8;
@@ -47,7 +50,7 @@ Handle<Value> quark(const Arguments& args) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     quark_hash(input, output, input_len);
@@ -88,17 +91,17 @@ Handle<Value> scrypt(const Arguments& args) {
 
    if(!Buffer::HasInstance(target))
        return except("Argument should be a buffer object.");
-    
+
    Local<Number> numn = args[1]->ToNumber();
    unsigned int nValue = numn->Value();
    Local<Number> numr = args[2]->ToNumber();
    unsigned int rValue = numr->Value();
-   
+
    char * input = Buffer::Data(target);
    char output[32];
 
    uint32_t input_len = Buffer::Length(target);
-   
+
    scrypt_N_R_1_256(input, output, nValue, rValue, input_len);
 
    Buffer* buff = Buffer::New(output, 32);
@@ -228,7 +231,7 @@ Handle<Value> skein(const Arguments& args) {
     char output[32];
 
     uint32_t input_len = Buffer::Length(target);
-    
+
     skein_hash(input, output, input_len);
 
     Buffer* buff = Buffer::New(output, 32);
@@ -249,7 +252,7 @@ Handle<Value> groestl(const Arguments& args) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     groestl_hash(input, output, input_len);
@@ -272,7 +275,7 @@ Handle<Value> groestlmyriad(const Arguments& args) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     groestlmyriad_hash(input, output, input_len);
@@ -295,7 +298,7 @@ Handle<Value> blake(const Arguments& args) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     blake_hash(input, output, input_len);
@@ -318,7 +321,7 @@ Handle<Value> fugue(const Arguments& args) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     fugue_hash(input, output, input_len);
@@ -341,7 +344,7 @@ Handle<Value> qubit(const Arguments& args) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     qubit_hash(input, output, input_len);
@@ -364,7 +367,7 @@ Handle<Value> hefty1(const Arguments& args) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     hefty1_hash(input, output, input_len);
@@ -387,7 +390,7 @@ Handle<Value> shavite3(const Arguments& args) {
 
     char * input = Buffer::Data(target);
     char output[32];
-    
+
     uint32_t input_len = Buffer::Length(target);
 
     shavite3_hash(input, output, input_len);
@@ -396,38 +399,38 @@ Handle<Value> shavite3(const Arguments& args) {
     return scope.Close(buff->handle_);
 }
 
-Handle<Value> cryptonight(const Arguments& args) {
-    HandleScope scope;
-
-    bool fast = false;
-
-    if (args.Length() < 1)
-        return except("You must provide one argument.");
-    
-    if (args.Length() >= 2) {
-        if(!args[1]->IsBoolean())
-            return except("Argument 2 should be a boolean");
-        fast = args[1]->ToBoolean()->BooleanValue();
-    }
-
-    Local<Object> target = args[0]->ToObject();
-
-    if(!Buffer::HasInstance(target))
-        return except("Argument should be a buffer object.");
-
-    char * input = Buffer::Data(target);
-    char output[32];
-    
-    uint32_t input_len = Buffer::Length(target);
-
-    if(fast)
-        cryptonight_fast_hash(input, output, input_len);
-    else
-        cryptonight_hash(input, output, input_len);
-
-    Buffer* buff = Buffer::New(output, 32);
-    return scope.Close(buff->handle_);
-}
+// Handle<Value> cryptonight(const Arguments& args) {
+//     HandleScope scope;
+//
+//     bool fast = false;
+//
+//     if (args.Length() < 1)
+//         return except("You must provide one argument.");
+//
+//     if (args.Length() >= 2) {
+//         if(!args[1]->IsBoolean())
+//             return except("Argument 2 should be a boolean");
+//         fast = args[1]->ToBoolean()->BooleanValue();
+//     }
+//
+//     Local<Object> target = args[0]->ToObject();
+//
+//     if(!Buffer::HasInstance(target))
+//         return except("Argument should be a buffer object.");
+//
+//     char * input = Buffer::Data(target);
+//     char output[32];
+//
+//     uint32_t input_len = Buffer::Length(target);
+//
+//     if(fast)
+//         cryptonight_fast_hash(input, output, input_len);
+//     else
+//         cryptonight_hash(input, output, input_len);
+//
+//     Buffer* buff = Buffer::New(output, 32);
+//     return scope.Close(buff->handle_);
+// }
 
 Handle<Value> x13(const Arguments& args) {
     HandleScope scope;
@@ -451,40 +454,40 @@ Handle<Value> x13(const Arguments& args) {
     return scope.Close(buff->handle_);
 }
 
-Handle<Value> boolberry(const Arguments& args) {
-    HandleScope scope;
-
-    if (args.Length() < 2)
-        return except("You must provide two arguments.");
-
-    Local<Object> target = args[0]->ToObject();
-    Local<Object> target_spad = args[1]->ToObject();
-    uint32_t height = 1;
-
-    if(!Buffer::HasInstance(target))
-        return except("Argument 1 should be a buffer object.");
-
-    if(!Buffer::HasInstance(target_spad))
-        return except("Argument 2 should be a buffer object.");
-
-    if(args.Length() >= 3)
-        if(args[2]->IsUint32())
-            height = args[2]->ToUint32()->Uint32Value();
-        else
-            return except("Argument 3 should be an unsigned integer.");
-
-    char * input = Buffer::Data(target);
-    char * scratchpad = Buffer::Data(target_spad);
-    char output[32];
-
-    uint32_t input_len = Buffer::Length(target);
-    uint64_t spad_len = Buffer::Length(target_spad);
-
-    boolberry_hash(input, input_len, scratchpad, spad_len, output, height);
-
-    Buffer* buff = Buffer::New(output, 32);
-    return scope.Close(buff->handle_);
-}
+// Handle<Value> boolberry(const Arguments& args) {
+//     HandleScope scope;
+//
+//     if (args.Length() < 2)
+//         return except("You must provide two arguments.");
+//
+//     Local<Object> target = args[0]->ToObject();
+//     Local<Object> target_spad = args[1]->ToObject();
+//     uint32_t height = 1;
+//
+//     if(!Buffer::HasInstance(target))
+//         return except("Argument 1 should be a buffer object.");
+//
+//     if(!Buffer::HasInstance(target_spad))
+//         return except("Argument 2 should be a buffer object.");
+//
+//     if(args.Length() >= 3)
+//         if(args[2]->IsUint32())
+//             height = args[2]->ToUint32()->Uint32Value();
+//         else
+//             return except("Argument 3 should be an unsigned integer.");
+//
+//     char * input = Buffer::Data(target);
+//     char * scratchpad = Buffer::Data(target_spad);
+//     char output[32];
+//
+//     uint32_t input_len = Buffer::Length(target);
+//     uint64_t spad_len = Buffer::Length(target_spad);
+//
+//     boolberry_hash(input, input_len, scratchpad, spad_len, output, height);
+//
+//     Buffer* buff = Buffer::New(output, 32);
+//     return scope.Close(buff->handle_);
+// }
 
 Handle<Value> nist5(const Arguments& args) {
     HandleScope scope;
@@ -574,6 +577,90 @@ Handle<Value> fresh(const Arguments& args) {
     return scope.Close(buff->handle_);
 }
 
+Handle<Value> whirlpoolx(const Arguments& args) {
+    HandleScope scope;
+
+    if (args.Length() < 1)
+        return except("You must provide one argument.");
+
+    Local<Object> target = args[0]->ToObject();
+
+    if(!Buffer::HasInstance(target))
+        return except("Argument should be a buffer object.");
+
+    char * input = Buffer::Data(target);
+    char output[32];
+
+    uint32_t input_len = Buffer::Length(target);
+
+    whirlpoolx_hash(input, output, input_len);
+
+    Buffer* buff = Buffer::New(output, 32);
+    return scope.Close(buff->handle_);
+}
+
+Handle<Value> lyra2re(const Arguments& args) {
+    HandleScope scope;
+
+    if (args.Length() < 1)
+        return except("You must provide one argument.");
+
+    Local<Object> target = args[0]->ToObject();
+
+    if(!Buffer::HasInstance(target))
+        return except("Argument should be a buffer object.");
+
+    char * input = Buffer::Data(target);
+    char output[32];
+
+    lyra2re_hash(input, output);
+
+    Buffer* buff = Buffer::New(output, 32);
+    return scope.Close(buff->handle_);
+}
+
+Handle<Value> lyra2re2(const Arguments& args) {
+    HandleScope scope;
+
+    if (args.Length() < 1)
+        return except("You must provide one argument.");
+
+    Local<Object> target = args[0]->ToObject();
+
+    if(!Buffer::HasInstance(target))
+        return except("Argument should be a buffer object.");
+
+    char * input = Buffer::Data(target);
+    char output[32];
+
+    lyra2re2_hash(input, output);
+
+    Buffer* buff = Buffer::New(output, 32);
+    return scope.Close(buff->handle_);
+}
+
+Handle<Value> zr5(const Arguments& args) {
+    HandleScope scope;
+
+	//printf("ZR5 DEBUG MARKER:\n");
+    if (args.Length() < 1)
+        return except("You must provide one argument.");
+
+    Local<Object> target = args[0]->ToObject();
+
+    if(!Buffer::HasInstance(target))
+        return except("Argument should be a buffer object.");
+
+    char * input = Buffer::Data(target);
+    char output[32];
+
+    unsigned int dSize = Buffer::Length(target);
+
+    zr5_hash((uint8_t *)input, (uint8_t *)output, dSize);
+
+    Buffer* buff = Buffer::New(output, 32);
+    return scope.Close(buff->handle_);
+}
 void init(Handle<Object> exports) {
     exports->Set(String::NewSymbol("quark"), FunctionTemplate::New(quark)->GetFunction());
     exports->Set(String::NewSymbol("x11"), FunctionTemplate::New(x11)->GetFunction());
@@ -590,13 +677,18 @@ void init(Handle<Object> exports) {
     exports->Set(String::NewSymbol("qubit"), FunctionTemplate::New(qubit)->GetFunction());
     exports->Set(String::NewSymbol("hefty1"), FunctionTemplate::New(hefty1)->GetFunction());
     exports->Set(String::NewSymbol("shavite3"), FunctionTemplate::New(shavite3)->GetFunction());
-    exports->Set(String::NewSymbol("cryptonight"), FunctionTemplate::New(cryptonight)->GetFunction());
+    //exports->Set(String::NewSymbol("cryptonight"), FunctionTemplate::New(cryptonight)->GetFunction());
     exports->Set(String::NewSymbol("x13"), FunctionTemplate::New(x13)->GetFunction());
-    exports->Set(String::NewSymbol("boolberry"), FunctionTemplate::New(boolberry)->GetFunction());
+    //exports->Set(String::NewSymbol("boolberry"), FunctionTemplate::New(boolberry)->GetFunction());
     exports->Set(String::NewSymbol("nist5"), FunctionTemplate::New(nist5)->GetFunction());
     exports->Set(String::NewSymbol("sha1"), FunctionTemplate::New(sha1)->GetFunction());
     exports->Set(String::NewSymbol("x15"), FunctionTemplate::New(x15)->GetFunction());
+    exports->Set(String::NewSymbol("whirlpoolx"), FunctionTemplate::New(whirlpoolx)->GetFunction());
     exports->Set(String::NewSymbol("fresh"), FunctionTemplate::New(fresh)->GetFunction());
+    exports->Set(String::NewSymbol("lyra2re"), FunctionTemplate::New(lyra2re)->GetFunction());
+    exports->Set(String::NewSymbol("lyra2re2"), FunctionTemplate::New(lyra2re2)->GetFunction());
+    exports->Set(String::NewSymbol("zr5"), FunctionTemplate::New(zr5)->GetFunction());
+    exports->Set(String::NewSymbol("ziftr"), FunctionTemplate::New(zr5)->GetFunction());
 }
 
 NODE_MODULE(multihashing, init)
