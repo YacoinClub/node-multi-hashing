@@ -13,6 +13,7 @@ Algorithms
 * quark
 * x11
 * x13
+* x15
 * nist5
 * scrypt
 * scryptn
@@ -26,8 +27,12 @@ Algorithms
 * qubit
 * hefty1
 * shavite3
-* cryptonight
 * boolberry
+* sha1
+* whirlpoolx
+* fresh
+* lyra2RE
+* zr5
 
 Usage
 -----
